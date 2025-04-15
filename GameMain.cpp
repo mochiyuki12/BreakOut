@@ -1,23 +1,10 @@
 #include "DxLib.h"
+#include "Ball.h"
+#include "Player.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-typedef struct
-{
-	int x;
-	int y;
-	int radius;
-	bool flag;
-} Bullet;
-
-typedef struct
-{
-	int x;
-	int y;
-	int velocity;
-	Bullet bullet;
-} Character;
 
 typedef struct
 {
@@ -26,8 +13,9 @@ typedef struct
 	bool isActive;
 } Block;
 
-Character _player = {};
+Player _player = {};
 Block _block = {};
+Ball _ball(0, 0);
 
 void GameInit()
 {
@@ -35,7 +23,7 @@ void GameInit()
 	_player.x = 290;
 	_player.y = 400;
 	_player.velocity = 5;
-
+	
 	_block.x = 290;
 	_block.y = 100;
 	_block.isActive = true;
@@ -56,36 +44,21 @@ int Title(char buf[])
 void Shoot()
 {
 	// 弾を発射する処理
-	if (_player.bullet.flag)
+	if (_ball.flag)
 	{
 		return; // すでに弾が発射されている場合は何もしない
 	}
 	else
 	{
-		_player.bullet.x = _player.x + 30; // プレイヤーの中心から弾を発射
-		_player.bullet.y = _player.y;
-		_player.bullet.radius = 5;
-		_player.bullet.flag = true;
+		_ball.x = _player.x + 30; // プレイヤーの中心から弾を発射
+		_ball.y = _player.y;
+		_ball.radius = 5;
+		_ball.flag = true;
 	}
 
 }
 
-void UpdateBullets()
-{
-	if (!_player.bullet.flag)
-	{
-		return;
-	}
 
-	if (_player.bullet.y <= 0)
-	{
-		_player.bullet.flag = false;
-		return;
-	}
-
-	_player.bullet.y -= 2; // 弾の移動速度
-	DrawCircleAA(_player.bullet.x, _player.bullet.y, _player.bullet.radius, 32, GetColor(255, 0, 0), TRUE);
-}
 
 void DrawBlock()
 {
@@ -99,10 +72,10 @@ void DrawBlock()
 
 void CollisionCheck()
 {
-	if (_player.bullet.flag == true)
+	if (_ball.flag == true)
 	{
-		if (_player.bullet.x >= _block.x && _player.bullet.x <= _block.x + 60 &&
-			_player.bullet.y >= _block.y && _player.bullet.y <= _block.y + 20)
+		if (_ball.x >= _block.x && _ball.x <= _block.x + 60 &&
+			_ball.y >= _block.y && _ball.y <= _block.y + 20)
 		{
 			_block.isActive = false; // ブロックを非アクティブにする
 			DrawString(100, 130, "Hit!", GetColor(255, 255, 255));
@@ -124,9 +97,9 @@ int GameMain(char buf[])
 		_player.x -= _player.velocity;
 	}
 
-	DrawBox(_player.x, _player.y, _player.x + 60, _player.y + 20, GetColor(255, 255, 255), TRUE);
+	
 
-	UpdateBullets();
+	_ball.UpdateBall();
 	DrawBlock();
 	CollisionCheck();
 
