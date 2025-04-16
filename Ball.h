@@ -5,17 +5,18 @@
 class Ball
 {
 public:
-	int x;
-	int y;
-	int radius;
-	bool flag;
-	Ball(int _x, int _y);
+	int x = 0;
+	int y = 0;
+	int velocityX = 2;
+	int velocityY = -2;
+	void Init();
+	bool IsOutOfBounds() const;
+	bool isActive = false;
 	void UpdateBall();
 
 private:
-	int vectorX;
-	int vectorY;
-	int _radius = 5;
+	const int RADIUS = 5;
+	void DrawBall();
 };
 
 #endif

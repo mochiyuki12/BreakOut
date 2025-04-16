@@ -1,32 +1,24 @@
 #include "DxLib.h"
 #include "Ball.h"
 #include "Player.h"
+#include "BlockHandler.h"
+#include "CollisionDetection.h"
+#include <vector>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-
-typedef struct
-{
-	int x;
-	int y;
-	bool isActive;
-} Block;
-
 Player _player = {};
-Block _block = {};
-Ball _ball(0, 0);
+Ball _ball;
+BlockHandler _blockHandler = {};
+CollisionDetection _collisionDetection = {};
 
 void GameInit()
 {
 	// ゲームの初期化処理
-	_player.x = 290;
-	_player.y = 400;
-	_player.velocity = 5;
-	
-	_block.x = 290;
-	_block.y = 100;
-	_block.isActive = true;
+	_player.Init();
+	_blockHandler.Init();
+	_ball.Init();
 }
 
 int Title(char buf[])
@@ -37,75 +29,24 @@ int Title(char buf[])
 	{
 		return 1; // ゲームスタート
 	}
-
 	return 0;
-}
-
-void Shoot()
-{
-	// 弾を発射する処理
-	if (_ball.flag)
-	{
-		return; // すでに弾が発射されている場合は何もしない
-	}
-	else
-	{
-		_ball.x = _player.x + 30; // プレイヤーの中心から弾を発射
-		_ball.y = _player.y;
-		_ball.radius = 5;
-		_ball.flag = true;
-	}
-
-}
-
-
-
-void DrawBlock()
-{
-	// ブロックを描画する処理
-	if (!_block.isActive)
-	{
-		return;
-	}
-	DrawBox(_block.x, _block.y, _block.x + 60, _block.y + 20, GetColor(0, 255, 0), TRUE);
-}
-
-void CollisionCheck()
-{
-	if (_ball.flag == true)
-	{
-		if (_ball.x >= _block.x && _ball.x <= _block.x + 60 &&
-			_ball.y >= _block.y && _ball.y <= _block.y + 20)
-		{
-			_block.isActive = false; // ブロックを非アクティブにする
-			DrawString(100, 130, "Hit!", GetColor(255, 255, 255));
-		}
-	}
 }
 
 int GameMain(char buf[])
 {
-	//ゲームのメインループ
-	DrawString(100, 100, "playering", GetColor(255, 255, 255));
-	if (buf[KEY_INPUT_RIGHT] == 1)
-	{
-		_player.x += _player.velocity;
-
-	}
-	if (buf[KEY_INPUT_LEFT] == 1)
-	{
-		_player.x -= _player.velocity;
-	}
-
-	
-
+	_player.PlayerUpdate(buf);
 	_ball.UpdateBall();
-	DrawBlock();
-	CollisionCheck();
+	_blockHandler.UpdateBlocks();
+	_collisionDetection.CheckCollision(_ball, _blockHandler._blocks, _player);
+
+	if (_ball.IsOutOfBounds())
+	{
+		return 2; // ゲームオーバー
+	}
 
 	if (buf[KEY_INPUT_SPACE] == 1)
 	{
-		Shoot();
+		_player.Shoot(_ball);
 	}
 
 	if (buf[KEY_INPUT_ESCAPE])
@@ -117,7 +58,7 @@ int GameMain(char buf[])
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-	char buffer[256];
+	char input[256];
 	char gameMode = 0;
 
 	ChangeWindowMode(TRUE);
@@ -141,26 +82,36 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		// 画面を黒で塗りつぶす
 		DrawBoxAA(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
 
-		GetHitKeyStateAll(buffer);
+		GetHitKeyStateAll(input);
 
 		switch (gameMode)
 		{
 		case 0: // タイトル画面
-			gameMode = Title(buffer);
+			gameMode = Title(input);
 			break;
 		case 1: // ゲーム画面
-			gameMode = GameMain(buffer);
+			gameMode = GameMain(input);
+			break;
+		case 2: // ゲームオーバー画面
+			DrawString(100, 130, "Game Over", GetColor(255, 0, 0));
+			DrawString(100, 150, "Press Enter to Restart", GetColor(255, 255, 255));
+			if (input[KEY_INPUT_RETURN])
+			{
+				GameInit();
+				gameMode = 1; // ゲームを再スタート
+			}
+			if (input[KEY_INPUT_ESCAPE])
+			{
+				gameMode = -1; // ゲーム終了
+			}
 			break;
 		default:
 			break;
 		}
 
-
 		//画面裏に書かれているものを表にする
 		ScreenFlip();
 	}
-
-
 
 	DxLib_End();
 

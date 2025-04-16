@@ -6,17 +6,16 @@
 class Player
 {
 public:
-    int x;
-    int y;
-    int velocity;
-
-    void Move(char buf[]);
-
-    void Shoot();
-
+    int x = 290;
+    int y = 400;
+    const int WIDTH = 60;
+    const int HEIGHT = 20;
+	void Init();
+    void PlayerUpdate(char buf[]);
+    void Shoot(Ball& ball);
 
 private:
-	int _width = 60;
-	int _height = 20;
-	
+    const int SPEED = 5;
+    void Move(char buf[]);
+    void PlayerDraw();
 };
