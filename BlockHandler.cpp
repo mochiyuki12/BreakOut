@@ -28,3 +28,16 @@ void BlockHandler::UpdateBlocks()
 		}
 	}
 }
+
+bool BlockHandler::IsAllBlocksCleared()
+{
+	// Check if all blocks are cleared
+	for (const auto& block : _blocks)
+	{
+		if (block.isActive)
+		{
+			return false;
+		}
+	}
+	return true;
+}

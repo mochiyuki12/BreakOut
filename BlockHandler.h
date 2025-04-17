@@ -9,6 +9,7 @@ public:
 	void Init();
 	void UpdateBlocks();
 	std::vector<Block> _blocks;
+	bool IsAllBlocksCleared();
 
 private:
 	const int BLOCKS_PER_ROW = 5;

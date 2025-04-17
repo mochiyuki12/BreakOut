@@ -3,6 +3,9 @@
 #include "Player.h"
 #include "BlockHandler.h"
 #include "CollisionDetection.h"
+#include "TitleScreen.h"
+#include "GameOverScreen.h"
+#include "GameClearScreen.h"
 #include <vector>
 
 #define WINDOW_WIDTH 640
@@ -12,6 +15,9 @@ Player _player = {};
 Ball _ball;
 BlockHandler _blockHandler = {};
 CollisionDetection _collisionDetection = {};
+TitleScreen _titleScreen = {};
+GameOverScreen _gameOverScreen = {};
+GameClearScreen _gameClearScreen = {};
 
 void GameInit()
 {
@@ -21,17 +27,6 @@ void GameInit()
 	_ball.Init();
 }
 
-int Title(char buf[])
-{
-	// タイトル画面の処理
-	DrawString(100, 130, "Press Enter to Start", GetColor(255, 255, 255));
-	if (buf[KEY_INPUT_RETURN])
-	{
-		return 1; // ゲームスタート
-	}
-	return 0;
-}
-
 int GameMain(char buf[])
 {
 	_player.PlayerUpdate(buf);
@@ -39,14 +34,19 @@ int GameMain(char buf[])
 	_blockHandler.UpdateBlocks();
 	_collisionDetection.CheckCollision(_ball, _blockHandler._blocks, _player);
 
+	if (buf[KEY_INPUT_SPACE] == 1)
+	{
+		_player.Shoot(_ball);
+	}
+
 	if (_ball.IsOutOfBounds())
 	{
 		return 2; // ゲームオーバー
 	}
 
-	if (buf[KEY_INPUT_SPACE] == 1)
+	if (_blockHandler.IsAllBlocksCleared())
 	{
-		_player.Shoot(_ball);
+		return 3; // ゲームクリア
 	}
 
 	if (buf[KEY_INPUT_ESCAPE])
@@ -87,23 +87,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		switch (gameMode)
 		{
 		case 0: // タイトル画面
-			gameMode = Title(input);
+			gameMode = _titleScreen.Title(input);
 			break;
 		case 1: // ゲーム画面
 			gameMode = GameMain(input);
 			break;
 		case 2: // ゲームオーバー画面
-			DrawString(100, 130, "Game Over", GetColor(255, 0, 0));
-			DrawString(100, 150, "Press Enter to Restart", GetColor(255, 255, 255));
-			if (input[KEY_INPUT_RETURN])
-			{
-				GameInit();
-				gameMode = 1; // ゲームを再スタート
-			}
-			if (input[KEY_INPUT_ESCAPE])
-			{
-				gameMode = -1; // ゲーム終了
-			}
+			GameInit();
+			gameMode = _gameOverScreen.GameOver(input);
+			break;
+		case 3: // ゲームクリア画面
+			GameInit();
+			gameMode = _gameClearScreen.GameClear(input);
 			break;
 		default:
 			break;
