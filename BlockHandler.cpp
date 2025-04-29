@@ -17,9 +17,12 @@ void BlockHandler::Init()
 	}
 }
 
+/// <summary>
+/// ブロックの描画を更新する。	
+/// </summary>
 void BlockHandler::UpdateBlocks()
 {
-	// Update blocks
+	
 	for (auto& block : _blocks)
 	{
 		if (block.isActive)
@@ -29,9 +32,12 @@ void BlockHandler::UpdateBlocks()
 	}
 }
 
+/// <summary>
+/// ブロックが全てクリアされたか確認する。
+/// </summary>
+/// <returns></returns>
 bool BlockHandler::IsAllBlocksCleared()
 {
-	// Check if all blocks are cleared
 	for (const auto& block : _blocks)
 	{
 		if (block.isActive)

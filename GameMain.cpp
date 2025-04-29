@@ -6,13 +6,14 @@
 #include "TitleScreen.h"
 #include "GameOverScreen.h"
 #include "GameClearScreen.h"
+#include "GameMode.h"
 #include <vector>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-Player _player = {};
-Ball _ball;
+Player _player = {WINDOW_WIDTH};
+Ball _ball = {WINDOW_WIDTH,WINDOW_HEIGHT};
 BlockHandler _blockHandler = {};
 CollisionDetection _collisionDetection = {};
 TitleScreen _titleScreen = {};
@@ -27,12 +28,12 @@ void GameInit()
 	_ball.Init();
 }
 
-int GameMain(char buf[])
+GameMode GameMain(char buf[])
 {
 	_player.PlayerUpdate(buf);
 	_ball.UpdateBall();
 	_blockHandler.UpdateBlocks();
-	_collisionDetection.CheckCollision(_ball, _blockHandler._blocks, _player);
+	_collisionDetection.HandleCollisions(_ball, _blockHandler._blocks, _player);
 
 	if (buf[KEY_INPUT_SPACE] == 1)
 	{
@@ -41,25 +42,25 @@ int GameMain(char buf[])
 
 	if (_ball.IsOutOfBounds())
 	{
-		return 2; // ゲームオーバー
+		return SCREEN_GAMEOVER; // ゲームオーバー
 	}
 
 	if (_blockHandler.IsAllBlocksCleared())
 	{
-		return 3; // ゲームクリア
+		return SCREEN_GAMECLEAR; // ゲームクリア
 	}
 
 	if (buf[KEY_INPUT_ESCAPE])
 	{
-		return -1; // ゲーム終了
+		return SCREEN_EXIT; // ゲーム終了
 	}
-	return 1;
+	return SCREEN_GAME;
 }
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	char input[256];
-	char gameMode = 0;
+	GameMode gameMode = SCREEN_TITLE;
 
 	ChangeWindowMode(TRUE);
 	SetGraphMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32);
@@ -77,7 +78,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	GameInit();
 
-	while (ProcessMessage() == 0 && gameMode != -1)
+	while (ProcessMessage() == 0 && gameMode != SCREEN_EXIT)
 	{
 		// 画面を黒で塗りつぶす
 		DrawBoxAA(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
@@ -86,17 +87,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 		switch (gameMode)
 		{
-		case 0: // タイトル画面
+		case SCREEN_TITLE: // タイトル画面
 			gameMode = _titleScreen.Title(input);
 			break;
-		case 1: // ゲーム画面
+		case SCREEN_GAME: // ゲーム画面
 			gameMode = GameMain(input);
 			break;
-		case 2: // ゲームオーバー画面
+		case SCREEN_GAMEOVER: // ゲームオーバー画面
 			GameInit();
 			gameMode = _gameOverScreen.GameOver(input);
 			break;
-		case 3: // ゲームクリア画面
+		case SCREEN_GAMECLEAR: // ゲームクリア画面
 			GameInit();
 			gameMode = _gameClearScreen.GameClear(input);
 			break;

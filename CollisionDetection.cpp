@@ -3,7 +3,7 @@
 #include "Ball.h"
 #include <vector>
 
-void CollisionDetection::CheckCollision(Ball& ball, std::vector<Block>& blocks, Player& player)
+void CollisionDetection::HandleCollisions(Ball& ball, std::vector<Block>& blocks, Player& player)
 {
 	if (!ball.isActive)
 	{
@@ -47,8 +47,13 @@ void CollisionDetection::PlayerBallCollision(Ball& ball, Player& player)
 	bool collideX = (ball.x >= player.x && ball.x <= player.x + player.WIDTH);
 	bool collideY = (ball.y >= player.y && ball.y <= player.y + player.HEIGHT);
 
-	if (collideX && collideY)
+	// プレイヤーの上端と弾の下端が衝突した場合
+	if (ball.y >= player.y)
 	{
-		ball.velocityY = -ball.velocityY; // y方向の反転
+		if (collideX && collideY)
+		{
+			ball.y = player.y - ball.GetRadius(); // 弾の位置を調整
+			ball.velocityY = -ball.velocityY; // y方向の反転
+		}
 	}
 }

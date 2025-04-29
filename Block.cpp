@@ -2,16 +2,6 @@
 
 #include "DxLib.h"
 
-int Block::GetWidth() const
-{
-	return BLOCK_WIDTH;
-}
-
-int Block::GetHeight() const
-{
-	return BLOCK_HEIGHT;
-}
-
 void Block::DrawBlock() const
 {
 	if (!isActive)

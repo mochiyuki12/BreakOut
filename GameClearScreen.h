@@ -1,8 +1,8 @@
 #pragma once
-#include "Dxlib.h"
+#include "GameMode.h"
 
 class GameClearScreen
 {
 public:
-	int GameClear(char buf[]);
+	GameMode GameClear(char buf[]);
 };

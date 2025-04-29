@@ -1,6 +1,7 @@
 #include "TitleScreen.h"
+#include "GameMode.h"
 
-int TitleScreen::Title(char buf[])
+GameMode TitleScreen::Title(char buf[])
 {
 	// タイトル画面の処理
 	DrawString(100, 110, "BreakOut", GetColor(255, 255, 255));
@@ -8,11 +9,11 @@ int TitleScreen::Title(char buf[])
 	DrawString(100, 150, "Press Escape to Quit", GetColor(255, 255, 255));
 	if (buf[KEY_INPUT_RETURN])
 	{
-		return 1; // ゲームスタート
+		return SCREEN_GAME; // ゲームスタート
 	}
 	else if (buf[KEY_INPUT_ESCAPE])
 	{
-		return -1; // ゲーム終了
+		return SCREEN_EXIT; // ゲーム終了
 	}
-	return 0;
+	return SCREEN_TITLE;
 }

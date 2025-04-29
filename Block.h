@@ -6,8 +6,12 @@ public:
 	bool isActive = false;
 	int xPosition = 0;
 	int yPosition = 0;
-	int GetWidth() const;
-	int GetHeight() const;
+	inline int GetWidth() const { return BLOCK_WIDTH;};
+	inline int GetHeight() const {return BLOCK_HEIGHT;};
+
+	/// <summary>
+	/// アクティブなブロックを描画する。
+	/// </summary>
 	void DrawBlock() const;
 
 private:

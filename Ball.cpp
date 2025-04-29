@@ -1,20 +1,28 @@
 #include "DxLib.h"
 #include "Ball.h"
 
+
+Ball::Ball(int screenWidth, int screenHeight) :
+	SCREEN_WIDTH(screenWidth),
+	SCREEN_HEIGHT(screenHeight)
+{
+	
+}
+
 void Ball::Init()
 {
 	// 弾の初期化
-	x = 0;
-	y = 0;
-	velocityX = 2; // x方向の速度
-	velocityY = -2; // y方向の速度
+	x = 0.0f;
+	y = 0.0f;
+	velocityX = 2.0f; // x方向の速度
+	velocityY = -2.0f; // y方向の速度
 	isActive = false; // 初期状態では非アクティブ
 }
 
+
 bool Ball::IsOutOfBounds() const
 {
-	// 弾が画面外に出たかどうかを判定
-	if (y > 480)
+	if (y > SCREEN_HEIGHT)
 	{
 		return true; // 画面外
 	}
@@ -23,6 +31,7 @@ bool Ball::IsOutOfBounds() const
 
 void Ball::UpdateBall()
 {
+	// ボールが画面の下に出たら非アクティブにする
     if (y <= 0)
     {
         isActive = false;
@@ -34,7 +43,7 @@ void Ball::UpdateBall()
 	y += velocityY;
 
 	//画面の左右の端に当たったら反転
-    if (x - RADIUS <= 0 || x + RADIUS >= 640)
+    if (x - RADIUS <= 0 || x + RADIUS >= SCREEN_WIDTH)
     {
         velocityX = -velocityX;
     }

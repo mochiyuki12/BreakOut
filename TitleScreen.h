@@ -1,9 +1,9 @@
 #pragma once
 #include "Dxlib.h"
+#include "GameMode.h"
 
 class TitleScreen
 {
-
 public:
-	int Title(char buf[]);
+	GameMode Title(char buf[]);
 };

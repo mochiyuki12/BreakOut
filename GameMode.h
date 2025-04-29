@@ -1,0 +1,11 @@
+#pragma once
+
+
+enum GameMode
+{
+	SCREEN_TITLE = 0,
+	SCREEN_GAME = 1,
+	SCREEN_GAMEOVER = 2,
+	SCREEN_GAMECLEAR = 3,
+	SCREEN_EXIT = -1
+};

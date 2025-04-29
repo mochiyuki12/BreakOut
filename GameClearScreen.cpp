@@ -1,6 +1,8 @@
 #include "GameClearScreen.h"
+#include "GameMode.h"
+#include "DxLib.h"
 
-int GameClearScreen::GameClear(char buf[])
+GameMode GameClearScreen::GameClear(char buf[])
 {
 	DrawString(100, 130, "Game Clear", GetColor(0, 255, 0));
 	DrawString(100, 150, "Press Enter to Restart", GetColor(255, 255, 255));
@@ -8,15 +10,15 @@ int GameClearScreen::GameClear(char buf[])
 	DrawString(100, 190, "Press Escape to Quit", GetColor(255, 255, 255));
 	if (buf[KEY_INPUT_RETURN])
 	{
-		return 1; // ゲームを再スタート
+		return SCREEN_GAME; // ゲームを再スタート
 	}
 	else if (buf[KEY_INPUT_SPACE])
 	{
-		return 0; // タイトルに戻る
+		return SCREEN_TITLE; // タイトルに戻る
 	}
 	else if (buf[KEY_INPUT_ESCAPE])
 	{
-		return -1; // ゲーム終了
+		return SCREEN_EXIT; // ゲーム終了
 	}
-	return 3; // ゲームクリア状態を維持
+	return SCREEN_GAMECLEAR; // ゲームクリア状態を維持
 }
